@@ -32,8 +32,19 @@ Users can:
 - switch between today's work, planned work, and the full workload
 - export a plan to JSON and import it later
 - keep tasks and settings saved locally in the browser
+- create a fresh private browser workspace without needing an account
 
 No account or external database is required for the core product.
+
+## Privacy and workspace isolation
+
+SYNAPSE is deliberately local-first. Each browser installation gets a random local workspace identifier, and that identifier namespaces the workload and capacity stored in `localStorage`.
+
+This means the application does **not** send workload data to a SYNAPSE backend, and separate browser installations do not share their local task data. A user can also create a new private workspace on the same browser with **New private workspace**.
+
+Important scope: this is **browser-level privacy, not an account system**. If multiple people intentionally use the same browser profile and do not create separate workspaces, they can access that browser profile's local SYNAPSE data. SYNAPSE currently has no login, cloud synchronization, or server-side user database.
+
+The app should therefore describe the model accurately as **private local workspaces**, not as authenticated multi-user accounts.
 
 ## Human-centered interaction
 
@@ -84,12 +95,6 @@ The important input is not just a deadline. It is the combination of:
 
 That combination lets SYNAPSE expose a practical constraint: whether the workload fits the time available.
 
-## Privacy
-
-The current product is local-first. Tasks and capacity are stored with browser `localStorage`; they are not sent to a SYNAPSE backend.
-
-The product has no required account, analytics backend, or external planning API in the current prototype.
-
 ## AI assistance disclosure
 
 AI was used as a development assistant during the creation of this prototype for brainstorming, implementation assistance, debugging support, code review, documentation, and iteration.
@@ -103,6 +108,7 @@ The final product direction, requirements, testing decisions, and submission cla
 - TypeScript
 - CSS
 - Browser Local Storage
+- Browser Crypto API for local workspace identifiers
 - Browser File APIs for JSON import/export
 - Vercel-ready deployment
 - AI development assistance: ChatGPT
@@ -136,6 +142,7 @@ npm start
 6. Read the **Why this one?** explanation for the surfaced action.
 7. Mark work complete as you go; the schedule recalculates automatically.
 8. Export the plan if you want a portable backup.
+9. Use **New private workspace** when a separate local workspace is needed on the same browser profile.
 
 ## Current scope
 
@@ -153,6 +160,8 @@ Implemented in the current prototype:
 - focus queue with recommendation rationale
 - visible unscheduled-capacity warning
 - local persistence
+- per-browser random workspace namespace
+- fresh private workspace creation
 - validated JSON import/export
 - responsive mobile layout
 - keyboard-focusable interactive controls
@@ -161,8 +170,10 @@ Implemented in the current prototype:
 
 Not claimed as implemented:
 
+- authenticated user accounts
 - cloud synchronization
 - multi-user collaboration
+- server-side workload storage
 - calendar provider integrations
 - notifications or background reminders
 - machine-learning predictions
@@ -170,7 +181,7 @@ Not claimed as implemented:
 
 ## Roadmap
 
-Potential future work includes calendar synchronization, recurring tasks, dependency-aware projects, optional accounts, and a richer constraint solver. These are roadmap items, not current capabilities.
+Potential future work includes calendar synchronization, recurring tasks, dependency-aware projects, optional authenticated accounts, and a richer constraint solver. These are roadmap items, not current capabilities.
 
 ## Competition context
 
