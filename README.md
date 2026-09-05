@@ -1,52 +1,80 @@
 # SYNAPSE
 
-> See what happens next.
+> Know what to do next.
 
-SYNAPSE is an interactive real-world system-state simulator. It models dependencies between connected conditions, propagates changes through those relationships, and makes the resulting cascade visible instead of hiding it inside a black box.
+SYNAPSE is a local-first workload planner that turns deadlines, estimated effort, priority, and the amount of time you actually have available into a realistic seven-day plan.
 
-## Why it exists
+It is deliberately simple: **capture the work, tell SYNAPSE your available time, and get a plan you can actually follow.**
 
-Real-world problems rarely happen in isolation. A change in one part of a system can create secondary effects elsewhere: heavy rainfall can increase drainage pressure, raise flood risk, reduce road access, disrupt transport, and affect community facilities.
+## The problem
 
-SYNAPSE turns those relationships into an interactive model so people can ask a simple question: **what happens if this changes?**
+A normal task list tells you *what* exists. A calendar tells you *when* something is due. Neither automatically answers the question that matters when several deadlines collide:
 
-## Current prototype
+> **What should I work on next, and can all of this realistically fit?**
 
-The first public prototype focuses on a community-resilience scenario. Users can:
+SYNAPSE treats a workload as a constrained planning problem rather than a collection of unchecked boxes.
 
-- change rainfall intensity with a live control
-- observe a dependency graph recalculate in real time
-- see stable, elevated, and critical system states
-- inspect upstream causes and downstream effects
-- review a deterministic confidence indicator
-- reset the scenario to baseline
-- understand the cascade from a single upstream input to downstream components
+## What the product does
 
-The prototype deliberately separates **calculation from explanation**. The current cascade is computed by a transparent weighted dependency model; no external AI service is required for the core simulation.
+Users can:
 
-## System model
+- add tasks with a context, due date, estimated effort, and priority
+- declare how many minutes they realistically have available per day
+- automatically generate a seven-day schedule
+- split large tasks across multiple days instead of cramming them into one session
+- surface the next task using due date, priority, and workload pressure
+- see whether individual tasks are healthy, tight, or overdue relative to available time
+- mark work complete and have the schedule recalculate immediately
+- switch between today's work, planned work, and the full workload
+- export a plan to JSON and import it later
+- keep tasks and settings saved locally in the browser
 
-```text
-Input condition
-      ↓
-Normalization
-      ↓
-Weighted dependency propagation
-      ↓
-State transition
-      ↓
-Affected components
-      ↓
-Inspectable explanation
-```
+No account or external database is required for the core product.
 
-The prototype's example chain is:
+## How the planning engine works
+
+The core engine is deterministic and runs in the browser.
 
 ```text
-Rainfall → Drainage → Flood risk → Road access → Transport → Facilities
+Tasks
+  ↓
+Due date + priority + estimated effort
+  ↓
+Available minutes per day
+  ↓
+Deadline-ordered allocation
+  ↓
+Daily capacity check
+  ↓
+Split work across available days
+  ↓
+Seven-day executable plan
 ```
 
-Each dependency has a propagation weight. Scores are calculated from the upstream state and baseline values, then classified into stable, elevated, or critical states.
+The planner processes unfinished work by deadline, then priority, then effort. For each task it allocates available minutes from today toward the deadline. If a task cannot fit inside the declared capacity, the product does not pretend that it fits: the remaining workload stays visible as unscheduled pressure.
+
+This makes the result reproducible and explainable. The same tasks and capacity produce the same plan.
+
+## Why it is different
+
+SYNAPSE is not trying to become another giant notes app or a decorative dashboard. Its core job is **workload-to-action translation**.
+
+The important input is not just a deadline. It is the combination of:
+
+- **when** the work is due
+- **how long** the work is expected to take
+- **how important** it is
+- **how much time** the user actually has
+
+That combination lets SYNAPSE expose a practical constraint: whether the workload fits the time available.
+
+## Privacy and honesty
+
+The current product is local-first. Tasks and capacity are stored with browser `localStorage`; they are not sent to a SYNAPSE backend.
+
+The planning engine does not claim to use AI. It is deterministic TypeScript logic. No external AI API is required to operate the product.
+
+Future AI features, if added, should explain or assist with user-provided planning data rather than inventing deadlines, time, or completed work.
 
 ## Technology
 
@@ -54,9 +82,11 @@ Each dependency has a propagation weight. Scores are calculated from the upstrea
 - React 19
 - TypeScript
 - CSS
+- Browser Local Storage
+- Browser File APIs for JSON import/export
 - Vercel-ready deployment
 
-## Local development
+## Run locally
 
 Requirements: Node.js 18.18+ (Node.js 20+ recommended).
 
@@ -67,7 +97,7 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-Production verification:
+Before shipping, run:
 
 ```bash
 npm run lint
@@ -75,35 +105,52 @@ npm run build
 npm start
 ```
 
-## Design principles
+## Product flow
 
-### Evidence before interpretation
-A system state should be inspectable. SYNAPSE exposes the dependency path that produced a state instead of presenting an unexplained conclusion.
+1. Add real tasks.
+2. Give each task a due date and honest time estimate.
+3. Set your realistic daily capacity.
+4. Review the generated seven-day plan.
+5. Use **What should I do now?** when you are unsure where to start.
+6. Mark work complete as you go; the schedule recalculates automatically.
+7. Export the plan if you want a portable backup.
 
-### Deterministic core
-The current engine is deterministic. The same inputs and dependency model produce the same output, making the prototype reproducible and easy to test.
+## Current scope
 
-### Human-controlled scenarios
-Users choose the scenario and change the input. The system responds to their experiment rather than making an autonomous operational decision.
+Implemented in the current prototype:
 
-### Progressive complexity
-The prototype starts with a small understandable model. The architecture is intentionally suited to expanding toward real datasets, user-defined graphs, historical state storage, and richer scenario modeling.
+- responsive web interface
+- task creation and deletion
+- completion state
+- due-date handling
+- priority handling
+- effort estimates
+- configurable daily capacity
+- deterministic seven-day scheduling
+- workload pressure indicators
+- focus queue
+- local persistence
+- JSON import/export
+- mobile-friendly layout
+- accessible labels and keyboard-focusable controls
+
+Not claimed as implemented:
+
+- cloud synchronization
+- multi-user collaboration
+- calendar provider integrations
+- notifications or background reminders
+- machine-learning predictions
+- external AI inference
 
 ## Roadmap
 
-- [ ] User-defined system graphs
-- [ ] Persistent scenarios and state history
-- [ ] Real-world public datasets
-- [ ] Multi-variable scenario modeling
-- [ ] Comparison of baseline vs. simulated states
-- [ ] Exportable scenario reports
-- [ ] Accessibility and keyboard-first graph controls
-- [ ] Optional grounded AI explanation layer that only explains computed evidence
+Potential future work includes calendar synchronization, recurring tasks, dependency-aware projects, optional accounts, and a richer constraint solver. These are roadmap items, not current capabilities.
 
 ## Competition context
 
-SYNAPSE is being developed as a new project for the Global Innovation Build Challenge V2. The final submission will accurately document the functionality that is actually implemented, the technologies used, and any AI assistance or external services used during development.
+SYNAPSE is being developed for the Global Innovation Build Challenge V2, Track 03: Open / General Technical Invention. The submission will describe only functionality that is actually implemented and will distinguish deterministic product logic from any future AI or external-service integrations.
 
 ## License
 
-MIT License. See `LICENSE` when added to the repository.
+MIT
