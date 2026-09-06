@@ -12,9 +12,6 @@ export const metadata: Metadata = {
     "study planner",
     "task planning",
   ],
-  verification: {
-    google: "LI6z3Avdq6RsVP2faZ6nlhcbRwvnMIdjJkrSBygvnZM",
-  },
   openGraph: {
     title: "SYNAPSE — Know what to do next",
     description: "Turn deadlines into a realistic plan you can actually follow.",
@@ -31,6 +28,12 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
+      <head>
+        <meta
+          name="google-site-verification"
+          content="LI6z3Avdq6RsVP2faZ6nlhcbRwvnMIdjJkrSBygvnZM"
+        />
+      </head>
       <body>{children}</body>
     </html>
   );
